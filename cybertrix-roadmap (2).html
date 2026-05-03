@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberTrix — Cybersecurity Learning Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #04080f;
+  --dark: #080f1c;
+  --darker: #060c17;
+  --blue: #1560e8;
+  --blue-bright: #2d80ff;
+  --blue-deep: #0d47c0;
+  --cyan: #00d4ff;
+  --cyan-dim: #00aed4;
+  --silver: #b8cce8;
+  --white: #eaf2ff;
+  --glow: rgba(21, 96, 232, 0.5);
+  --glow-cyan: rgba(0, 212, 255, 0.35);
+  --glow-strong: rgba(21, 96, 232, 0.8);
+  --glass: rgba(255,255,255,0.025);
+  --glass-border: rgba(21, 96, 232, 0.18);
+  --glass-border-hover: rgba(21, 96, 232, 0.55);
+  --green: #00ff88;
+  --purple: #b040ff;
+  --red: #ff3355;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Rajdhani', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ===== CUSTOM CURSOR — FAST & SMOOTH ===== */
+/* Dot: follows mouse 1:1 at native speed (no lag) */
+#cur-dot {
+  width: 6px; height: 6px;
+  background: var(--cyan);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 99999;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  transition: background 0.15s, transform 0.1s;
+  box-shadow: 0 0 8px var(--cyan), 0 0 16px var(--glow-cyan);
+}
+
+/* Ring: follows with slight lag for smooth feel */
+#cur-ring {
+  width: 28px; height: 28px;
+  border: 1.5px solid rgba(0, 212, 255, 0.6);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 99998;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  mix-blend-mode: screen;
+  transition: width 0.2s ease, height 0.2s ease, border-color 0.2s, background 0.2s, opacity 0.2s;
+}
+
+#cur-ring.hovering {
+  width: 48px; height: 48px;
+  border-color: var(--blue-bright);
+  background: rgba(21, 96, 232, 0.08);
+}
+
+/* ===== CANVAS BACKGROUND ===== */
+#bgCanvas {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: linear-gradient(var(--blue), var(--cyan)); border-radius: 2px; }
+
+/* ===== OVERLAYS ===== */
+.grid-overlay {
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(21,96,232,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(21,96,232,0.03) 1px, transparent 1px);
+  background-size: 64px 64px;
+  pointer-events: none; z-index: 0;
+}
+.vignette {
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(4,8,15,0.85) 100%);
+  pointer-events: none; z-index: 0;
+}
+.scan-line {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0,212,255,0.2), transparent);
+  animation: scanDown 10s linear infinite;
+  z-index: 0; pointer-events: none;
+  opacity: 0.7;
+}
+@keyframes scanDown { 0% { top: -1px; } 100% { top: 100vh; } }
+
+/* ===== NAV ===== */
+nav {
+  position: fixed; top: 0; width: 100%;
+  padding: 0 64px;
+  height: 68px;
+  display: flex; align-items: center; justify-content: space-between;
+  z-index: 1000;
+  background: rgba(4,8,15,0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(21,96,232,0.15);
+  transition: background 0.3s;
+}
+nav::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0,212,255,0.3), transparent);
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 12px;
+  text-decoration: none;
+}
+.logo-icon { width: 40px; height: 40px; }
+.logo-text {
+  font-family: 'Orbitron', monospace;
+  font-size: 17px; font-weight: 800;
+  letter-spacing: 4px;
+}
+.logo-text span:first-child { color: var(--white); }
+.logo-text span:last-child {
+  background: linear-gradient(135deg, var(--blue-bright), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+  display: flex; gap: 40px;
+  list-style: none;
+}
+.nav-links a {
+  color: rgba(184,204,232,0.7);
+  text-decoration: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase;
+  transition: color 0.25s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute; bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: linear-gradient(to right, var(--blue-bright), var(--cyan));
+  transition: width 0.3s cubic-bezier(0.23,1,0.32,1);
+}
+.nav-links a:hover { color: var(--white); }
+.nav-links a:hover::after { width: 100%; }
+
+.nav-cta {
+  padding: 9px 26px;
+  background: transparent;
+  border: 1px solid rgba(21,96,232,0.6);
+  color: var(--cyan);
+  font-family: 'Orbitron', monospace;
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  cursor: none;
+  transition: all 0.25s;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  position: relative;
+  overflow: hidden;
+}
+.nav-cta::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--blue-deep), var(--blue));
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.nav-cta:hover { color: var(--white); box-shadow: 0 0 24px var(--glow), 0 0 48px rgba(21,96,232,0.3); }
+.nav-cta:hover::before { opacity: 1; }
+.nav-cta span { position: relative; z-index: 1; }
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative; z-index: 1;
+  padding: 100px 64px 80px;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Ambient hero glows */
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 700px; height: 700px;
+  background: radial-gradient(ellipse, rgba(21,96,232,0.12) 0%, transparent 70%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 7px 20px;
+  border: 1px solid rgba(0,212,255,0.25);
+  background: rgba(0,212,255,0.04);
+  border-radius: 1px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; letter-spacing: 3px;
+  color: var(--cyan); text-transform: uppercase;
+  margin-bottom: 36px;
+  animation: fadeUp 0.8s ease both;
+}
+.hero-badge-dot {
+  width: 5px; height: 5px;
+  background: var(--cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--cyan);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.7); }
+}
+
+.hero-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(42px, 7.5vw, 96px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -2px;
+  margin-bottom: 28px;
+  animation: fadeUp 0.8s 0.12s ease both;
+}
+.hero-title .line1 {
+  display: block;
+  background: linear-gradient(135deg, #fff 0%, var(--silver) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-title .line2 {
+  display: block;
+  background: linear-gradient(135deg, var(--blue-bright) 0%, var(--cyan) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  position: relative;
+}
+
+/* Glitch */
+.glitch { position: relative; }
+.glitch::before, .glitch::after {
+  content: attr(data-text);
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+}
+.glitch::before {
+  color: var(--cyan); opacity: 0;
+  animation: glitch1 5s infinite;
+  clip-path: polygon(0 25%, 100% 25%, 100% 45%, 0 45%);
+}
+.glitch::after {
+  color: var(--blue-bright); opacity: 0;
+  animation: glitch2 5s infinite;
+  clip-path: polygon(0 60%, 100% 60%, 100% 78%, 0 78%);
+}
+@keyframes glitch1 {
+  0%,88%,100%{transform:none;opacity:0}
+  90%{transform:translateX(-4px);opacity:0.7}
+  92%{transform:translateX(4px);opacity:0.7}
+  94%{transform:none;opacity:0}
+}
+@keyframes glitch2 {
+  0%,85%,100%{transform:none;opacity:0}
+  87%{transform:translateX(4px);opacity:0.7}
+  89%{transform:translateX(-4px);opacity:0.7}
+  91%{transform:none;opacity:0}
+}
+
+.hero-subtitle {
+  font-size: 17px; font-weight: 400;
+  color: rgba(184,204,232,0.75); letter-spacing: 0.5px;
+  max-width: 580px; line-height: 1.75;
+  margin: 0 auto 52px;
+  animation: fadeUp 0.8s 0.25s ease both;
+}
+
+.hero-stats {
+  display: flex; gap: 56px; justify-content: center;
+  margin-bottom: 56px;
+  animation: fadeUp 0.8s 0.38s ease both;
+}
+.stat { text-align: center; }
+.stat-num {
+  display: block;
+  font-family: 'Orbitron', monospace;
+  font-size: 38px; font-weight: 900;
+  background: linear-gradient(135deg, var(--blue-bright), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+}
+.stat-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 3px;
+  color: rgba(184,204,232,0.5); text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.hero-btns {
+  display: flex; gap: 16px; justify-content: center;
+  animation: fadeUp 0.8s 0.5s ease both;
+}
+
+.btn-primary {
+  padding: 15px 48px;
+  background: linear-gradient(135deg, var(--blue), var(--blue-deep));
+  color: var(--white);
+  font-family: 'Orbitron', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  border: none; cursor: none;
+  clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+  transition: all 0.25s;
+  box-shadow: 0 0 40px rgba(21,96,232,0.45), inset 0 1px 0 rgba(255,255,255,0.1);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::after {
+  content: '';
+  position: absolute; top: 0; left: -100%;
+  width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  transition: left 0.5s;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 50px rgba(21,96,232,0.7); }
+.btn-primary:hover::after { left: 150%; }
+
+.btn-secondary {
+  padding: 15px 48px;
+  background: transparent;
+  color: var(--cyan);
+  font-family: 'Orbitron', monospace;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase;
+  border: 1px solid rgba(0,212,255,0.35);
+  cursor: none;
+  clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%);
+  transition: all 0.25s;
+  text-decoration: none;
+}
+.btn-secondary:hover {
+  background: rgba(0,212,255,0.08);
+  border-color: var(--cyan);
+  box-shadow: 0 0 28px var(--glow-cyan);
+  transform: translateY(-2px);
+}
+
+.hero-scroll {
+  position: absolute; bottom: 36px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  animation: fadeUp 1s 0.9s ease both;
+}
+.scroll-text {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; letter-spacing: 4px;
+  color: rgba(184,204,232,0.35); text-transform: uppercase;
+}
+.scroll-line {
+  width: 1px; height: 48px;
+  background: linear-gradient(to bottom, transparent, var(--blue), transparent);
+  animation: scrollAnim 2.5s ease-in-out infinite;
+}
+@keyframes scrollAnim {
+  0% { transform: scaleY(0) translateY(0); transform-origin: top; }
+  45% { transform: scaleY(1); transform-origin: top; }
+  55% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+
+/* ===== KEYFRAME ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== SECTION STYLES ===== */
+section { position: relative; z-index: 1; }
+
+.section-header {
+  text-align: center;
+  padding: 100px 64px 64px;
+}
+.section-tag {
+  display: inline-block;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; letter-spacing: 4px;
+  color: var(--cyan); text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 800; letter-spacing: -1px;
+  margin-bottom: 14px;
+}
+.section-title .accent {
+  background: linear-gradient(135deg, var(--blue-bright), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.section-sub {
+  color: rgba(184,204,232,0.6); font-size: 16px;
+  max-width: 540px; margin: 0 auto;
+  line-height: 1.75;
+}
+
+/* ===== ROADMAP ===== */
+.roadmap { padding: 0 64px 120px; position: relative; z-index: 1; }
+
+.phase-container {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+/* Phase Label */
+.phase-label {
+  display: flex; align-items: center; gap: 24px;
+  margin-bottom: 28px; margin-top: 80px;
+}
+.phase-label:first-child { margin-top: 0; }
+
+.phase-num {
+  font-family: 'Orbitron', monospace;
+  font-size: 68px; font-weight: 900; line-height: 1;
+  min-width: 90px;
+  background: linear-gradient(135deg, var(--blue-bright) 0%, var(--cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 12px rgba(21,96,232,0.6));
+}
+
+.phase-info { flex: 1; }
+.phase-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 20px; font-weight: 700;
+  color: var(--white); margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+.phase-desc {
+  font-size: 13px; letter-spacing: 0.5px;
+  color: rgba(184,204,232,0.5);
+}
+
+.phase-badge {
+  padding: 6px 16px;
+  border-radius: 2px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 2px;
+  text-transform: uppercase; white-space: nowrap;
+}
+.badge-green { background: rgba(0,255,136,0.08); color: var(--green); border: 1px solid rgba(0,255,136,0.25); }
+.badge-blue { background: rgba(21,96,232,0.12); color: var(--blue-bright); border: 1px solid rgba(21,96,232,0.35); }
+.badge-purple { background: rgba(176,64,255,0.08); color: var(--purple); border: 1px solid rgba(176,64,255,0.25); }
+.badge-red { background: rgba(255,51,85,0.08); color: var(--red); border: 1px solid rgba(255,51,85,0.25); }
+
+.phase-divider {
+  width: 100%; height: 1px;
+  background: linear-gradient(to right, transparent, rgba(21,96,232,0.2), transparent);
+  margin-bottom: 36px;
+}
+
+/* Module Grid */
+.module-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+  gap: 18px;
+}
+
+/* Module Card */
+.module-card {
+  background: linear-gradient(135deg, rgba(21,96,232,0.04) 0%, rgba(4,8,15,0.8) 100%);
+  border: 1px solid var(--glass-border);
+  padding: 28px 26px 22px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  opacity: 0;
+  transform: translateY(28px);
+  cursor: none;
+  backdrop-filter: blur(8px);
+}
+.module-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Top shimmer line */
+.module-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0,212,255,0.4), transparent);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+
+/* Left accent bar */
+.module-card::after {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 2px; height: 100%;
+  background: linear-gradient(to bottom, var(--blue), var(--cyan));
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+
+.module-card:hover {
+  border-color: rgba(21,96,232,0.45);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 56px rgba(21,96,232,0.18), 0 0 0 1px rgba(0,212,255,0.08);
+  background: linear-gradient(135deg, rgba(21,96,232,0.09) 0%, rgba(4,8,15,0.9) 100%);
+}
+.module-card:hover::before { opacity: 1; }
+.module-card:hover::after { opacity: 1; }
+
+.card-corner {
+  position: absolute; top: 0; right: 0;
+  width: 14px; height: 14px;
+  border-top: 1.5px solid rgba(0,212,255,0.4);
+  border-right: 1.5px solid rgba(0,212,255,0.4);
+  transition: border-color 0.3s, opacity 0.3s;
+  opacity: 0.5;
+}
+.module-card:hover .card-corner { border-color: var(--cyan); opacity: 1; }
+
+/* Bottom left corner */
+.card-corner-bl {
+  position: absolute; bottom: 0; left: 0;
+  width: 14px; height: 14px;
+  border-bottom: 1.5px solid rgba(21,96,232,0.25);
+  border-left: 1.5px solid rgba(21,96,232,0.25);
+  transition: border-color 0.3s, opacity 0.3s;
+  opacity: 0.4;
+}
+.module-card:hover .card-corner-bl { border-color: var(--blue-bright); opacity: 0.8; }
+
+.module-icon {
+  width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(21,96,232,0.14), rgba(0,212,255,0.08));
+  border: 1px solid rgba(21,96,232,0.22);
+  clip-path: polygon(4px 0%, 100% 0%, calc(100% - 4px) 100%, 0% 100%);
+  font-size: 20px;
+  transition: all 0.35s;
+}
+.module-card:hover .module-icon {
+  background: linear-gradient(135deg, rgba(21,96,232,0.28), rgba(0,212,255,0.16));
+  box-shadow: 0 0 16px rgba(21,96,232,0.35);
+}
+
+.module-num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 3px;
+  color: var(--blue-bright); text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.module-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 13px; font-weight: 700;
+  color: var(--white); margin-bottom: 10px;
+  letter-spacing: 0.3px; line-height: 1.35;
+}
+.module-desc {
+  font-size: 13px; line-height: 1.7;
+  color: rgba(184,204,232,0.6);
+  margin-bottom: 16px;
+}
+
+.topic-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.topic-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 12px; color: rgba(184,204,232,0.65);
+  line-height: 1.4;
+}
+.topic-bullet {
+  width: 3px; height: 3px;
+  background: var(--blue-bright);
+  border-radius: 50%;
+  margin-top: 6px; flex-shrink: 0;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+.module-card:hover .topic-bullet {
+  background: var(--cyan);
+  box-shadow: 0 0 4px var(--cyan);
+}
+
+.module-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 18px; padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.module-duration {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; color: rgba(184,204,232,0.45);
+}
+.module-level {
+  padding: 3px 9px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; letter-spacing: 1px;
+  border-radius: 1px;
+}
+.level-beginner { background: rgba(0,255,136,0.08); color: var(--green); border: 1px solid rgba(0,255,136,0.2); }
+.level-intermediate { background: rgba(21,96,232,0.12); color: var(--blue-bright); border: 1px solid rgba(21,96,232,0.3); }
+.level-advanced { background: rgba(176,64,255,0.08); color: var(--purple); border: 1px solid rgba(176,64,255,0.2); }
+.level-expert { background: rgba(255,51,85,0.08); color: var(--red); border: 1px solid rgba(255,51,85,0.2); }
+
+/* ===== CONNECTOR PATH ===== */
+.path-connector {
+  display: flex; justify-content: center;
+  padding: 24px 0;
+}
+.connector-line {
+  width: 2px; height: 64px;
+  background: linear-gradient(to bottom, var(--blue), var(--cyan));
+  position: relative;
+  opacity: 0.5;
+}
+.connector-arrow {
+  position: absolute; bottom: -5px; left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 8px solid var(--cyan);
+}
+
+/* ===== CERTIFICATIONS ===== */
+.certs-section {
+  padding: 0 64px 120px;
+  position: relative; z-index: 1;
+}
+.certs-grid {
+  max-width: 1320px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+.cert-card {
+  background: linear-gradient(135deg, rgba(21,96,232,0.05) 0%, rgba(4,8,15,0.7) 100%);
+  border: 1px solid rgba(21,96,232,0.15);
+  padding: 24px 20px;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  opacity: 0; transform: translateY(20px);
+  backdrop-filter: blur(8px);
+  cursor: none;
+  position: relative;
+  overflow: hidden;
+}
+.cert-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(21,96,232,0.07) 0%, transparent 60%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.cert-card.visible { opacity: 1; transform: translateY(0); }
+.cert-card:hover {
+  border-color: rgba(21,96,232,0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(21,96,232,0.15);
+}
+.cert-card:hover::before { opacity: 1; }
+
+.cert-icon { font-size: 26px; margin-bottom: 10px; }
+.cert-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 14px; font-weight: 700;
+  color: var(--white); margin-bottom: 6px;
+  letter-spacing: 1px;
+}
+.cert-full {
+  font-size: 11px; color: rgba(184,204,232,0.5);
+  line-height: 1.5; margin-bottom: 12px;
+}
+.cert-level { display: inline-block; }
+
+/* ===== FOOTER ===== */
+footer {
+  position: relative; z-index: 1;
+  border-top: 1px solid rgba(21,96,232,0.12);
+  background: rgba(4,8,15,0.6);
+  backdrop-filter: blur(20px);
+}
+footer::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(0,212,255,0.25), transparent);
+}
+.footer-inner {
+  max-width: 1320px; margin: 0 auto;
+  padding: 44px 64px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+.footer-logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 20px; font-weight: 800;
+  letter-spacing: 4px;
+}
+.footer-logo span:first-child { color: var(--white); }
+.footer-logo span:last-child {
+  background: linear-gradient(135deg, var(--blue-bright), var(--cyan));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.footer-tagline {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; color: rgba(0,212,255,0.4);
+  letter-spacing: 1px;
+}
+.footer-copy {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; color: rgba(184,204,232,0.25);
+  letter-spacing: 1px;
+}
+
+/* ===== PHASE PROGRESS BAR ===== */
+.phase-progress {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 36px;
+}
+.progress-track {
+  flex: 1; height: 1.5px;
+  background: rgba(255,255,255,0.05);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(to right, var(--blue), var(--cyan));
+  animation: fillBar 2.5s cubic-bezier(0.23,1,0.32,1) forwards;
+  transform-origin: left;
+  transform: scaleX(0);
+}
+@keyframes fillBar { to { transform: scaleX(1); } }
+.progress-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; color: var(--cyan); letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* ===== TERMINAL BLINK ===== */
+.terminal-text::after {
+  content: '_';
+  animation: blink 1.1s step-end infinite;
+  color: var(--cyan);
+}
+@keyframes blink { 0%,50%{opacity:1} 51%,100%{opacity:0} }
+
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="grid-overlay"></div>
+<div class="vignette"></div>
+<div class="scan-line"></div>
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 2L37 11V29L20 38L3 29V11L20 2Z" stroke="rgba(21,96,232,0.25)" stroke-width="1" fill="rgba(21,96,232,0.04)"/>
+      <path d="M14 13C12 15.5 11 17.8 11 20C11 22.2 12 24.5 14 27" stroke="url(#sg)" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M17 16.5L23 23.5M23 16.5L17 23.5" stroke="url(#sb)" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="20" cy="20" r="2.5" fill="rgba(0,212,255,0.5)"/>
+      <defs>
+        <linearGradient id="sg" x1="11" y1="13" x2="14" y2="27" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#c8d8f0"/><stop offset="1" stop-color="#7090b8"/>
+        </linearGradient>
+        <linearGradient id="sb" x1="17" y1="16.5" x2="23" y2="23.5" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#00d4ff"/><stop offset="1" stop-color="#1560e8"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="logo-text"><span>CYBER</span><span>TRIX</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#modules">Modules</a></li>
+    <li><a href="#certs">Certifications</a></li>
+  </ul>
+  <button class="nav-cta"><span>Start Learning</span></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-badge">
+    <span class="hero-badge-dot"></span>
+    <span>Cybersecurity Mastery Program</span>
+  </div>
+  <h1 class="hero-title">
+    <span class="line1 glitch" data-text="MASTER THE">MASTER THE</span>
+    <span class="line2">CYBER DOMAIN</span>
+  </h1>
+  <p class="hero-subtitle">
+    A structured, battle-tested roadmap from zero to elite — built for the next generation of cybersecurity professionals.
+  </p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">4</span><span class="stat-label">Phases</span></div>
+    <div class="stat"><span class="stat-num">24+</span><span class="stat-label">Modules</span></div>
+    <div class="stat"><span class="stat-num">200+</span><span class="stat-label">Topics</span></div>
+    <div class="stat"><span class="stat-num">12</span><span class="stat-label">Certifications</span></div>
+  </div>
+  <div class="hero-btns">
+    <a href="#roadmap" class="btn-primary">Explore Roadmap</a>
+    <a href="#certs" class="btn-secondary">View Certifications</a>
+  </div>
+  <div class="hero-scroll">
+    <span class="scroll-text">Scroll to explore</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ROADMAP SECTION -->
+<section id="roadmap">
+  <div class="section-header">
+    <span class="section-tag">// learning_path.init()</span>
+    <h2 class="section-title">The <span class="accent">CyberTrix</span> Roadmap</h2>
+    <p class="section-sub">A structured journey from absolute beginner to elite cybersecurity professional. Each phase builds on the last.</p>
+  </div>
+</section>
+
+<!-- MODULES -->
+<div class="roadmap" id="modules">
+  <div class="phase-container">
+
+    <!-- PHASE 1: FOUNDATION -->
+    <div class="phase-label">
+      <span class="phase-num">01</span>
+      <div class="phase-info">
+        <div class="phase-title">Foundation Phase</div>
+        <div class="phase-desc">Core concepts, tools, and mindset every cybersecurity professional needs</div>
+      </div>
+      <span class="phase-badge badge-green">Beginner</span>
+    </div>
+    <div class="phase-progress"><div class="progress-track"><div class="progress-fill" style="animation-delay:0.2s"></div></div><span class="progress-label">25%</span></div>
+    <div class="phase-divider"></div>
+
+    <div class="module-grid" id="phase1">
+      <div class="module-card" data-delay="0">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🌐</div>
+        <div class="module-num">// M-01</div>
+        <div class="module-name">Networking Fundamentals</div>
+        <div class="module-desc">Master the backbone of all cybersecurity — how data flows across networks.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>OSI & TCP/IP Models</li>
+          <li class="topic-item"><span class="topic-bullet"></span>IP Addressing, Subnetting, CIDR</li>
+          <li class="topic-item"><span class="topic-bullet"></span>DNS, DHCP, HTTP/HTTPS, FTP</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Firewalls, Routers & Switches</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Wireshark & Packet Analysis</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 4–6 Weeks</span>
+          <span class="module-level level-beginner">Beginner</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="80">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🐧</div>
+        <div class="module-num">// M-02</div>
+        <div class="module-name">Linux & OS Fundamentals</div>
+        <div class="module-desc">Linux is the OS of hackers. Learn to navigate and control it completely.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>Linux CLI & Bash Scripting</li>
+          <li class="topic-item"><span class="topic-bullet"></span>File Permissions & User Mgmt</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Process & Service Management</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Kali Linux Environment Setup</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Windows Command Line & PowerShell</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 3–5 Weeks</span>
+          <span class="module-level level-beginner">Beginner</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="160">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🐍</div>
+        <div class="module-num">// M-03</div>
+        <div class="module-name">Programming for Hackers</div>
+        <div class="module-desc">Code is a weapon. Learn to write scripts, automate attacks, and build tools.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>Python for Automation & Scripting</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Bash & Shell Scripting</li>
+          <li class="topic-item"><span class="topic-bullet"></span>JavaScript & Web Basics</li>
+          <li class="topic-item"><span class="topic-bullet"></span>SQL & Database Querying</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Git & Version Control</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 6–8 Weeks</span>
+          <span class="module-level level-beginner">Beginner</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="240">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🔐</div>
+        <div class="module-num">// M-04</div>
+        <div class="module-name">Cybersecurity Core Concepts</div>
+        <div class="module-desc">Understand the landscape, terminology, and ethical foundations of security.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>CIA Triad & Security Principles</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Threat Actors & Attack Types</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Security Frameworks (NIST, ISO 27001)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Ethics & Legal Boundaries</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Authentication & Authorization</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 2–3 Weeks</span>
+          <span class="module-level level-beginner">Beginner</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connector -->
+    <div class="path-connector">
+      <div class="connector-line"><div class="connector-arrow"></div></div>
+    </div>
+
+    <!-- PHASE 2: CORE SECURITY -->
+    <div class="phase-label">
+      <span class="phase-num">02</span>
+      <div class="phase-info">
+        <div class="phase-title">Core Security Phase</div>
+        <div class="phase-desc">Deep-dive into attack vectors, defense mechanisms, and security operations</div>
+      </div>
+      <span class="phase-badge badge-blue">Intermediate</span>
+    </div>
+    <div class="phase-progress"><div class="progress-track"><div class="progress-fill" style="animation-delay:0.2s"></div></div><span class="progress-label">50%</span></div>
+    <div class="phase-divider"></div>
+
+    <div class="module-grid" id="phase2">
+      <div class="module-card" data-delay="0">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🕵️</div>
+        <div class="module-num">// M-05</div>
+        <div class="module-name">Ethical Hacking Methodology</div>
+        <div class="module-desc">Learn the five phases of hacking and how professionals approach targets.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>Reconnaissance & OSINT</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Scanning & Enumeration (Nmap)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Vulnerability Analysis</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Exploitation Basics</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Post-Exploitation & Reporting</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 6–8 Weeks</span>
+          <span class="module-level level-intermediate">Intermediate</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="80">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🌍</div>
+        <div class="module-num">// M-06</div>
+        <div class="module-name">Web Application Security</div>
+        <div class="module-desc">Attack and defend the most exposed attack surface — web applications.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>OWASP Top 10 Vulnerabilities</li>
+          <li class="topic-item"><span class="topic-bullet"></span>SQL Injection & XSS</li>
+          <li class="topic-item"><span class="topic-bullet"></span>CSRF, IDOR, Path Traversal</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Burp Suite Mastery</li>
+          <li class="topic-item"><span class="topic-bullet"></span>API Security Testing</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 8–10 Weeks</span>
+          <span class="module-level level-intermediate">Intermediate</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="160">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🔒</div>
+        <div class="module-num">// M-07</div>
+        <div class="module-name">Cryptography & PKI</div>
+        <div class="module-desc">Understand the math behind security — encryption, hashing, and key exchange.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>Symmetric & Asymmetric Encryption</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Hashing Algorithms (MD5, SHA)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>SSL/TLS & Certificate Mgmt</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Public Key Infrastructure</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Cryptographic Attacks</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 4–5 Weeks</span>
+          <span class="module-level level-intermediate">Intermediate</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="240">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🛡️</div>
+        <div class="module-num">// M-08</div>
+        <div class="module-name">Network Security & Defense</div>
+        <div class="module-desc">Build and break network defenses — IDS, firewalls, VPNs and more.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>IDS/IPS Configuration</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Firewall Rules & ACLs</li>
+          <li class="topic-item"><span class="topic-bullet"></span>VPN & Tunneling Protocols</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Network Sniffing & MitM</li>
+          <li class="topic-item"><span class="topic-bullet"></span>VLAN Hopping & ARP Spoofing</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 5–6 Weeks</span>
+          <span class="module-level level-intermediate">Intermediate</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="320">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">💀</div>
+        <div class="module-num">// M-09</div>
+        <div class="module-name">Social Engineering</div>
+        <div class="module-desc">The human OS is always vulnerable. Learn to exploit psychological weaknesses.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>Phishing & Spear Phishing</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Vishing & Smishing</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Pretexting & Impersonation</li>
+          <li class="topic-item"><span class="topic-bullet"></span>SET (Social Engineering Toolkit)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Security Awareness Training</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 3–4 Weeks</span>
+          <span class="module-level level-intermediate">Intermediate</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="400">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🖥️</div>
+        <div class="module-num">// M-10</div>
+        <div class="module-name">System Exploitation</div>
+        <div class="module-desc">Own systems through real exploitation techniques used by professionals.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>Password Attacks (Hashcat, John)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Metasploit Framework</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Windows & Linux Privesc</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Persistence Mechanisms</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Covering Tracks & Log Clearing</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 6–8 Weeks</span>
+          <span class="module-level level-intermediate">Intermediate</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connector -->
+    <div class="path-connector">
+      <div class="connector-line"><div class="connector-arrow"></div></div>
+    </div>
+
+    <!-- PHASE 3: ADVANCED -->
+    <div class="phase-label">
+      <span class="phase-num">03</span>
+      <div class="phase-info">
+        <div class="phase-title">Advanced Offensive & Defensive</div>
+        <div class="phase-desc">Penetration testing, malware analysis, forensics, and red team operations</div>
+      </div>
+      <span class="phase-badge badge-purple">Advanced</span>
+    </div>
+    <div class="phase-progress"><div class="progress-track"><div class="progress-fill" style="animation-delay:0.2s"></div></div><span class="progress-label">75%</span></div>
+    <div class="phase-divider"></div>
+
+    <div class="module-grid" id="phase3">
+      <div class="module-card" data-delay="0">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">⚔️</div>
+        <div class="module-num">// M-11</div>
+        <div class="module-name">Advanced Penetration Testing</div>
+        <div class="module-desc">Full-scope pen testing engagements, methodology, and professional reporting.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>External & Internal Pen Testing</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Active Directory Attacks</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Kerberoasting & Pass-the-Hash</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Lateral Movement Techniques</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Professional Report Writing</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 10–12 Weeks</span>
+          <span class="module-level level-advanced">Advanced</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="80">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🦠</div>
+        <div class="module-num">// M-12</div>
+        <div class="module-name">Malware Analysis</div>
+        <div class="module-desc">Dissect and reverse engineer malicious software to understand attacker tactics.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>Static & Dynamic Analysis</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Reverse Engineering (IDA, Ghidra)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Ransomware & Trojan Analysis</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Sandbox Environments (Cuckoo)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>YARA Rule Development</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 8–10 Weeks</span>
+          <span class="module-level level-advanced">Advanced</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="160">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🔍</div>
+        <div class="module-num">// M-13</div>
+        <div class="module-name">Digital Forensics & DFIR</div>
+        <div class="module-desc">Investigate cybercrimes, recover evidence, and reconstruct attacks.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>Disk & Memory Forensics</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Log Analysis & Timeline Reconstruction</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Autopsy & Volatility Tools</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Network Forensics (pcap Analysis)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Chain of Custody & Legal Considerations</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 6–8 Weeks</span>
+          <span class="module-level level-advanced">Advanced</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="240">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">📊</div>
+        <div class="module-num">// M-14</div>
+        <div class="module-name">SOC & Incident Response</div>
+        <div class="module-desc">Operate a Security Operations Center and respond to real-world incidents.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>SIEM Tools (Splunk, ELK Stack)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Threat Hunting & Detection</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Incident Response Playbooks</li>
+          <li class="topic-item"><span class="topic-bullet"></span>IOC & TTPs (MITRE ATT&CK)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Threat Intelligence Integration</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 8–10 Weeks</span>
+          <span class="module-level level-advanced">Advanced</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="320">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">☁️</div>
+        <div class="module-num">// M-15</div>
+        <div class="module-name">Cloud Security</div>
+        <div class="module-desc">Secure the infrastructure of the modern era — AWS, Azure, and GCP.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>Cloud Architecture & IAM</li>
+          <li class="topic-item"><span class="topic-bullet"></span>S3 Bucket Misconfigurations</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Container & Kubernetes Security</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Serverless Security Testing</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Cloud Pen Testing (CloudGoat)</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 8–10 Weeks</span>
+          <span class="module-level level-advanced">Advanced</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="400">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">📱</div>
+        <div class="module-num">// M-16</div>
+        <div class="module-name">Mobile & IoT Security</div>
+        <div class="module-desc">Attack the fastest-growing attack surface — smartphones and connected devices.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>Android & iOS App Pentesting</li>
+          <li class="topic-item"><span class="topic-bullet"></span>APK Reverse Engineering (MobSF)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>IoT Firmware Analysis</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Bluetooth & RF Attacks</li>
+          <li class="topic-item"><span class="topic-bullet"></span>OWASP Mobile Top 10</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 6–8 Weeks</span>
+          <span class="module-level level-advanced">Advanced</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connector -->
+    <div class="path-connector">
+      <div class="connector-line"><div class="connector-arrow"></div></div>
+    </div>
+
+    <!-- PHASE 4: ELITE -->
+    <div class="phase-label">
+      <span class="phase-num">04</span>
+      <div class="phase-info">
+        <div class="phase-title">Elite & Specialization Phase</div>
+        <div class="phase-desc">Red team operations, exploit development, bug bounty, and career mastery</div>
+      </div>
+      <span class="phase-badge badge-red">Expert</span>
+    </div>
+    <div class="phase-progress"><div class="progress-track"><div class="progress-fill" style="animation-delay:0.2s"></div></div><span class="progress-label">100%</span></div>
+    <div class="phase-divider"></div>
+
+    <div class="module-grid" id="phase4">
+      <div class="module-card" data-delay="0">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🔴</div>
+        <div class="module-num">// M-17</div>
+        <div class="module-name">Red Team Operations</div>
+        <div class="module-desc">Simulate nation-state level attacks against enterprise environments.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>Red Team vs Pen Test Methodology</li>
+          <li class="topic-item"><span class="topic-bullet"></span>C2 Frameworks (Cobalt Strike, Sliver)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Living off the Land (LOLBins)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Adversary Simulation (MITRE)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Purple Team Exercises</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 12–16 Weeks</span>
+          <span class="module-level level-expert">Expert</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="80">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">💣</div>
+        <div class="module-num">// M-18</div>
+        <div class="module-name">Exploit Development</div>
+        <div class="module-desc">Write your own exploits — buffer overflows, shellcode, and zero-days.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>Assembly Language (x86/x64)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Buffer Overflow & Stack Exploitation</li>
+          <li class="topic-item"><span class="topic-bullet"></span>ROP Chains & DEP/ASLR Bypass</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Heap Exploitation Techniques</li>
+          <li class="topic-item"><span class="topic-bullet"></span>0-Day Discovery & CVE Research</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 16–20 Weeks</span>
+          <span class="module-level level-expert">Expert</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="160">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">💰</div>
+        <div class="module-num">// M-19</div>
+        <div class="module-name">Bug Bounty Hunting</div>
+        <div class="module-desc">Get paid to hack — legally. Build a bug bounty career from scratch.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>HackerOne & Bugcrowd Platforms</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Recon Automation (Subfinder, amass)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Chaining Vulnerabilities for Impact</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Writing High-Quality Reports</li>
+          <li class="topic-item"><span class="topic-bullet"></span>P1/P2 Bug Hunting Strategies</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ Ongoing</span>
+          <span class="module-level level-expert">Expert</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="240">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🤖</div>
+        <div class="module-num">// M-20</div>
+        <div class="module-name">AI & Cybersecurity</div>
+        <div class="module-desc">The future of hacking and defense — leveraging and attacking AI systems.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>AI-Powered Threat Detection</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Adversarial ML Attacks</li>
+          <li class="topic-item"><span class="topic-bullet"></span>LLM Security & Prompt Injection</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Deepfake Detection</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Automated Pen Testing with AI</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 8–10 Weeks</span>
+          <span class="module-level level-expert">Expert</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="320">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">⚖️</div>
+        <div class="module-num">// M-21</div>
+        <div class="module-name">Cyber Law & Compliance</div>
+        <div class="module-desc">Navigate the legal landscape of cybersecurity — essential for professionals.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>GDPR, HIPAA, PCI-DSS</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Cyber Laws & Jurisdiction</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Risk Management Frameworks</li>
+          <li class="topic-item"><span class="topic-bullet"></span>GRC (Governance, Risk, Compliance)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Security Audit & Assessment</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ 4–6 Weeks</span>
+          <span class="module-level level-expert">Expert</span>
+        </div>
+      </div>
+
+      <div class="module-card" data-delay="400">
+        <div class="card-corner"></div><div class="card-corner-bl"></div>
+        <div class="module-icon">🏆</div>
+        <div class="module-num">// M-22</div>
+        <div class="module-name">CTF & Cyber Competitions</div>
+        <div class="module-desc">Sharpen skills in Capture The Flag competitions — practical hacking at its finest.</div>
+        <ul class="topic-list">
+          <li class="topic-item"><span class="topic-bullet"></span>CTF Platforms (HackTheBox, TryHackMe)</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Pwn, Crypto, Web, Forensics, OSINT</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Steganography & Binary Exploitation</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Team Collaboration in CTFs</li>
+          <li class="topic-item"><span class="topic-bullet"></span>Building a Public CTF Portfolio</li>
+        </ul>
+        <div class="module-footer">
+          <span class="module-duration">⏱ Ongoing</span>
+          <span class="module-level level-expert">Expert</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CERTIFICATIONS -->
+<section id="certs" class="section-header">
+  <span class="section-tag">// certifications.load()</span>
+  <h2 class="section-title">Target <span class="accent">Certifications</span></h2>
+  <p class="section-sub">Industry-recognized credentials to validate your expertise at every level of your journey.</p>
+</section>
+
+<div class="certs-section">
+  <div class="certs-grid">
+    <div class="cert-card" data-delay="0"><div class="cert-icon">🎖️</div><div class="cert-name">CompTIA Security+</div><div class="cert-full">Entry-level security certification covering core concepts</div><span class="cert-level badge-green">Beginner</span></div>
+    <div class="cert-card" data-delay="80"><div class="cert-icon">🎖️</div><div class="cert-name">CEH</div><div class="cert-full">Certified Ethical Hacker — EC-Council flagship certification</div><span class="cert-level badge-blue">Intermediate</span></div>
+    <div class="cert-card" data-delay="160"><div class="cert-icon">🎖️</div><div class="cert-name">eJPT</div><div class="cert-full">eLearnSecurity Junior Penetration Tester</div><span class="cert-level badge-green">Beginner</span></div>
+    <div class="cert-card" data-delay="240"><div class="cert-icon">🏅</div><div class="cert-name">OSCP</div><div class="cert-full">Offensive Security Certified Professional — the gold standard</div><span class="cert-level badge-purple">Advanced</span></div>
+    <div class="cert-card" data-delay="320"><div class="cert-icon">🏅</div><div class="cert-name">PNPT</div><div class="cert-full">Practical Network Penetration Tester — TCM Security</div><span class="cert-level badge-blue">Intermediate</span></div>
+    <div class="cert-card" data-delay="400"><div class="cert-icon">🏅</div><div class="cert-name">CISSP</div><div class="cert-full">Certified Information Systems Security Professional</div><span class="cert-level badge-purple">Advanced</span></div>
+    <div class="cert-card" data-delay="480"><div class="cert-icon">🏆</div><div class="cert-name">OSED</div><div class="cert-full">Offensive Security Exploit Developer</div><span class="cert-level badge-red">Expert</span></div>
+    <div class="cert-card" data-delay="560"><div class="cert-icon">🏆</div><div class="cert-name">CRTO</div><div class="cert-full">Certified Red Team Operator — Zero-Point Security</div><span class="cert-level badge-red">Expert</span></div>
+    <div class="cert-card" data-delay="640"><div class="cert-icon">🎖️</div><div class="cert-name">AWS Security</div><div class="cert-full">AWS Certified Security — Specialty</div><span class="cert-level badge-blue">Intermediate</span></div>
+    <div class="cert-card" data-delay="720"><div class="cert-icon">🏅</div><div class="cert-name">GCIH</div><div class="cert-full">GIAC Certified Incident Handler</div><span class="cert-level badge-purple">Advanced</span></div>
+    <div class="cert-card" data-delay="800"><div class="cert-icon">🏅</div><div class="cert-name">CHFI</div><div class="cert-full">Computer Hacking Forensic Investigator — EC-Council</div><span class="cert-level badge-purple">Advanced</span></div>
+    <div class="cert-card" data-delay="880"><div class="cert-icon">🏆</div><div class="cert-name">OSWE</div><div class="cert-full">Offensive Security Web Expert</div><span class="cert-level badge-red">Expert</span></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo"><span>CYBER</span><span>TRIX</span></div>
+      <div class="footer-tagline" style="margin-top:6px;">// Hack the Learning Curve</div>
+    </div>
+    <div class="footer-copy">© 2026 CyberTrix. All rights reserved.</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(184,204,232,0.3);letter-spacing:1px;text-align:right;">
+      <div>KNOWLEDGE IS POWER</div>
+      <div style="color:var(--blue-bright);margin-top:4px;">USE IT ETHICALLY</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ===== CURSOR — FAST & SMOOTH =====
+// Strategy: dot follows mouse INSTANTLY (no lag), ring follows with light lerp
+const dot = document.getElementById('cur-dot');
+const ring = document.getElementById('cur-ring');
+
+let mx = window.innerWidth / 2, my = window.innerHeight / 2;
+let rx = mx, ry = my;
+const LERP = 0.18; // slightly lazy ring — feels smooth, not sluggish
+
+// Dot: update immediately on mouse move, no rAF delay
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.transform = `translate(${mx - 3}px, ${my - 3}px)`;
+}, { passive: true });
+
+// Ring: smooth lerp in rAF
+;(function animateRing() {
+  rx += (mx - rx) * LERP;
+  ry += (my - ry) * LERP;
+  ring.style.transform = `translate(${rx - 14}px, ${ry - 14}px)`;
+  requestAnimationFrame(animateRing);
+})();
+
+// Hover effect
+document.querySelectorAll('a, button, .module-card, .cert-card, .nav-cta').forEach(el => {
+  el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+  el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+});
+
+// Hide cursor when leaving window
+document.addEventListener('mouseleave', () => { dot.style.opacity = '0'; ring.style.opacity = '0'; });
+document.addEventListener('mouseenter', () => { dot.style.opacity = '1'; ring.style.opacity = '1'; });
+
+
+// ===== OPTIMISED CANVAS BACKGROUND =====
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let W = 0, H = 0;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize, { passive: true });
+
+// Fewer particles, but rendered more efficiently
+const PCOUNT = 80;
+const pts = [];
+for (let i = 0; i < PCOUNT; i++) {
+  pts.push({
+    x: Math.random() * innerWidth,
+    y: Math.random() * innerHeight,
+    vx: (Math.random() - 0.5) * 0.35,
+    vy: (Math.random() - 0.5) * 0.35,
+    r: Math.random() * 1.4 + 0.3,
+    a: Math.random() * 0.45 + 0.08,
+    c: Math.random() > 0.55 ? '#1560e8' : '#00d4ff'
+  });
+}
+
+// Shooting stars
+const stars = [];
+let frameCount = 0;
+
+function drawBg() {
+  frameCount++;
+  ctx.clearRect(0, 0, W, H);
+
+  // Particles
+  for (const p of pts) {
+    p.x = (p.x + p.vx + W) % W;
+    p.y = (p.y + p.vy + H) % H;
+    ctx.globalAlpha = p.a;
+    ctx.fillStyle = p.c;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, 6.2832);
+    ctx.fill();
+  }
+
+  // Connections — only check every other frame for perf
+  if (frameCount % 2 === 0) {
+    const MAXD = 110, MAXD2 = MAXD * MAXD;
+    for (let i = 0; i < PCOUNT - 1; i++) {
+      for (let j = i + 1; j < PCOUNT; j++) {
+        const dx = pts[i].x - pts[j].x;
+        const dy = pts[i].y - pts[j].y;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < MAXD2) {
+          const alpha = (1 - Math.sqrt(d2) / MAXD) * 0.12;
+          ctx.globalAlpha = alpha;
+          ctx.strokeStyle = '#1560e8';
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  // Shooting stars
+  if (Math.random() < 0.012 && stars.length < 4) {
+    stars.push({ x: Math.random() * W, y: Math.random() * H * 0.5, len: 80 + Math.random() * 80, spd: 3 + Math.random() * 4, a: 0.9, ang: Math.PI / 4 + (Math.random() - 0.5) * 0.25 });
+  }
+  for (let i = stars.length - 1; i >= 0; i--) {
+    const s = stars[i];
+    const ex = s.x + Math.cos(s.ang) * s.len, ey = s.y + Math.sin(s.ang) * s.len;
+    const g = ctx.createLinearGradient(s.x, s.y, ex, ey);
+    g.addColorStop(0, 'transparent');
+    g.addColorStop(1, `rgba(0,212,255,${s.a})`);
+    ctx.globalAlpha = s.a;
+    ctx.strokeStyle = g;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    ctx.moveTo(s.x, s.y);
+    ctx.lineTo(ex, ey);
+    ctx.stroke();
+    s.x += Math.cos(s.ang) * s.spd;
+    s.y += Math.sin(s.ang) * s.spd;
+    s.a -= 0.022;
+    if (s.a <= 0) stars.splice(i, 1);
+  }
+
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+
+// ===== SCROLL ANIMATIONS =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const delay = parseInt(entry.target.dataset.delay || 0);
+      setTimeout(() => entry.target.classList.add('visible'), delay);
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.module-card, .cert-card').forEach(el => observer.observe(el));
+
+// ===== HERO PARALLAX (passive, throttled) =====
+let ticking = false;
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      const sy = window.scrollY;
+      const hero = document.querySelector('.hero');
+      if (hero && sy < window.innerHeight * 1.2) {
+        hero.style.transform = `translateY(${sy * 0.25}px)`;
+        hero.style.opacity = Math.max(0, 1 - sy / 550);
+      }
+      ticking = false;
+    });
+    ticking = true;
+  }
+}, { passive: true });
+
+// ===== COUNTER ANIMATION =====
+function counter(el, target, suffix) {
+  const dur = 1800, t0 = performance.now();
+  (function tick(now) {
+    const p = Math.min((now - t0) / dur, 1);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(e * target) + suffix;
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
+}
+
+const statsObs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const nums = entry.target.querySelectorAll('.stat-num');
+      [[4,''], [24,'+'],[200,'+'],[12,'']].forEach(([n, s], i) => {
+        if (nums[i]) counter(nums[i], n, s);
+      });
+      statsObs.disconnect();
+    }
+  });
+}, { threshold: 0.5 });
+
+const hs = document.querySelector('.hero-stats');
+if (hs) statsObs.observe(hs);
+</script>
+</body>
+</html>
